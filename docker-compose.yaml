@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Luna
+      MYSQL_USER: LunaUser
+      MYSQL_PASSWORD: StrongPa$$word123
+    ports:
+      - 3306:3306
+    volumes:
+      - ./Data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      PMA_USER: LunaUser
+      PMA_PASSWORD: StrongPa$$word123
+    ports:
+      - 5000:80
