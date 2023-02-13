@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: Luna
+      MYSQL_DATABASE: luna
       MYSQL_USER: LunaUser
       MYSQL_PASSWORD: StrongPa$$word123
     ports:
@@ -25,4 +25,4 @@ services:
       PMA_USER: LunaUser
       PMA_PASSWORD: StrongPa$$word123
     ports:
-      - 5000:80
+      - 5000:80 
