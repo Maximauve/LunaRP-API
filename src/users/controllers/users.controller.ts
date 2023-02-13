@@ -11,25 +11,29 @@ import { AuthService } from 'src/auth/services/auth.service';
 @Controller('users')
 export class UsersController {
 
-  constructor(private usersService: UsersService, private authService: AuthService) {}
+	constructor(private usersService: UsersService, private authService: AuthService) { }
 
-  @Get()
-  GetAll(): {} {
-    return this.usersService.GetAll();
-  }
+	@Get()
+	GetAll(): {} {
+		return this.usersService.GetAll();
+	}
 
-  @UsePipes(ValidationPipe)
-  @Post('/auth/sign-up')
-  SignUp(@Body() body: CreatedUsersDto): {} {   
-    return this.usersService.Create(body);
-  }
+	@UsePipes(ValidationPipe)
+	@Post('/auth/sign-up')
+	SignUp(@Body() body: CreatedUsersDto): {} {
+		return this.usersService.Create(body);
+	}
 
-  @Post('auth/login')
-  async login(@Body() body) {
-    let user = await this.usersService.FindOneEmail(body.email);
-    if (!user || user.password !== body.password) {
-      throw new UnauthorizedException();
-    }
-    return this.authService.Login(user);
-  }
+	@Post('auth/login')
+	async login(@Body() body) {
+		let user = await this.usersService.FindOneEmail(body.email);
+		if (!user || user.password !== body.password) {
+			throw new UnauthorizedException();
+		}
+		return {
+			"username": user.username,
+			"email": user.email,
+			"token": (await this.authService.Login(user)).access_token
+		};
+	}
 }
