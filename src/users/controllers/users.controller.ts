@@ -15,13 +15,13 @@ import { UpdatedUserDto } from '../dto/updateUser.dto';
 @Controller('users')
 export class UsersController {
 
-  constructor(private usersService: UsersService, private authService: AuthService) {}
+	constructor(private usersService: UsersService, private authService: AuthService) { }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  GetAll(): {} {
-    return this.usersService.GetAll();
-  }
+	@Get()
+	GetAll(): {} {
+		return this.usersService.GetAll();
+	}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
@@ -34,14 +34,18 @@ export class UsersController {
   SignUp(@Body() body: CreatedUserDto): {} {   
     return this.usersService.Create(body);
   }
-
+  
   @Post('/auth/login')
   async login(@Body() body) {
     let user = await this.usersService.FindOneEmail(body.email);
     if (!user || user.password !== body.password) {
       throw new UnauthorizedException();
     }
-    return this.authService.Login(user);
+    return {
+			"username": user.username,
+			"email": user.email,
+			"token": (await this.authService.Login(user)).access_token
+		};
   }
 
   @UseGuards(JwtAuthGuard)
