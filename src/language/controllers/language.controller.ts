@@ -9,6 +9,7 @@ import { CreatedLanguageDto } from '../dto/language.dto';
 import { UsersService } from 'src/users/services/users.service';
 import { Role } from 'src/users/role.enum';
 import { DeletedLanguageDto } from '../dto/deletedLanguage.dto';
+import { UpdatedLanguageDto } from '../dto/updatedLanguage.dto';
 
 
 @UseGuards(JwtAuthGuard)
@@ -47,24 +48,19 @@ export class LanguagesController {
   }
 
   @Post('/update')
-  async Update(@Req() req, @Body() updateItem: UpdatedItemDto) {
+  async Update(@Req() req, @Body() updateLanguage: UpdatedLanguageDto) {
     let me = await this.usersService.FindOneId(req.user.id);
-    let item = await this.itemsService.FindOneId(updateItem.id);
+    let language = await this.languagesService.FindOneId(updateLanguage.id);
     if (me.role !== Role.Admin) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-    } else if (!item) {
-      throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
+    } else if (!language) {
+      throw new HttpException('Language not found', HttpStatus.NOT_FOUND);
     }
-    let newItem: CreatedItemDto = {
-      name: updateItem.name ? updateItem.name : item.name,
-      price: updateItem.price ? updateItem.price : item.price,
-      damages: updateItem.damages ? updateItem.damages : item.damages,
-      defense: updateItem.defense ? updateItem.defense : item.defense,
-      regeneration: updateItem.regeneration ? updateItem.regeneration : item.regeneration,
-      image: updateItem.image ? updateItem.image : item.image,
-      description: updateItem.description ? updateItem.description : item.description
+    let newLanguage: CreatedLanguageDto = {
+      name: updateLanguage.name ? updateLanguage.name : language.name,
+      description: updateLanguage.description ? updateLanguage.description : language.description,
     }
-    this.itemsService.Update(updateItem.id, newItem);
-    return { message: 'Item updated' }
+    this.languagesService.Update(updateLanguage.id, newLanguage);
+    return { message: 'Language updated' }
   }
 }
