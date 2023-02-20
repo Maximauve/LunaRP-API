@@ -10,6 +10,7 @@ import { DeletedUserDto } from '../dto/deleteUser.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Role } from '../role.enum';
 import { UpdatedUserDto } from '../dto/updateUser.dto';
+import { createHash } from "crypto"
 
 
 @Controller('users')
@@ -31,14 +32,16 @@ export class UsersController {
 
   @UsePipes(ValidationPipe)
   @Post('/auth/sign-up')
-  SignUp(@Body() body: CreatedUserDto): {} {   
+  SignUp(@Body() body: CreatedUserDto): {} {
+    body.password = createHash("sha512").update(body.password).digest("hex")
     return this.usersService.Create(body);
   }
   
   @Post('/auth/login')
   async login(@Body() body) {
+    console.log(createHash("sha512").update(body.password).digest("hex"))
     let user = await this.usersService.FindOneEmail(body.email);
-    if (!user || user.password !== body.password) {
+    if (!user || user.password !== createHash("sha512").update(body.password).digest("hex")) {
       throw new UnauthorizedException();
     }
     return {
@@ -73,7 +76,7 @@ export class UsersController {
     let newUser: CreatedUserDto = {
       username: updatedUser.username ? updatedUser.username : person.username,
       email: updatedUser.email ? updatedUser.email : person.email,
-      password: updatedUser.password ? updatedUser.password : person.password,
+      password: updatedUser.password ? createHash("sha512").update(updatedUser.password).digest("hex") : person.password,
       role: updatedUser.role ? updatedUser.role : Role.User
     }
     this.usersService.Update(updatedUser.id, newUser);

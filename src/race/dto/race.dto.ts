@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength, IsInt } from "class-validator"
+import { Language } from "src/language/language.entity";
 
 export class CreatedRaceDto {
     @IsNotEmpty()
@@ -14,4 +15,7 @@ export class CreatedRaceDto {
 
     @IsNotEmpty()
     description: string;
+
+    @IsNotEmpty()
+    language: Language[];
 }
