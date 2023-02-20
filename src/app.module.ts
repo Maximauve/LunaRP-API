@@ -29,12 +29,18 @@ import { CharacterItem } from './character/character_item.entity';
         username: 'root',
         password: 'root',
         database: 'luna',
-        entities: [User, Item],
+        entities: [User, Character, CharacterItem, Item, Spell, Class, Campaign, Race, Language],
         synchronize: true,
       })
     }),
     UsersModule,
-    ItemModule
+    CharacterModule,
+    ItemModule,
+    SpellModule,
+    ClassModule,
+    CampaignModule,
+    RaceModule,
+    LanguageModule
   ],
   controllers: [],
   providers: [],

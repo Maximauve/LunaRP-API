@@ -1,48 +1,49 @@
-import { Body, Controller, Post, Get, Req, Param, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ItemsService } from '../services/item.service';
-import { CreatedItemDto } from '../dto/item.dto';
-import { UseGuards } from '@nestjs/common/decorators';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UsersService } from 'src/users/services/users.service';
-import { Role } from 'src/users/role.enum';
+import { Body, Controller, Post, Get, Req, Param } from '@nestjs/common';
+import { LanguagesService } from '../services/language.service';
+import { UseGuards, UsePipes } from '@nestjs/common/decorators';
+import { ValidationPipe } from '@nestjs/common/pipes';
 import { HttpException, UnauthorizedException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
-import { DeletedItemDto } from '../dto/deletedItem.dto';
-import { UpdatedItemDto } from '../dto/updateItem.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CreatedLanguageDto } from '../dto/language.dto';
+import { UsersService } from 'src/users/services/users.service';
+import { Role } from 'src/users/role.enum';
+import { DeletedLanguageDto } from '../dto/deletedLanguage.dto';
+
 
 @UseGuards(JwtAuthGuard)
-@Controller('items')
-export class ItemsController {
+@Controller('languages')
+export class LanguagesController {
 
-  constructor(private itemsService: ItemsService, private usersService: UsersService) {}
+  constructor(private languagesService: LanguagesService, private usersService: UsersService) {}
 
   @Get()
   GetAll(): {} {
-    return this.itemsService.GetAll();
+    return this.languagesService.GetAll();
   }
 
   @Get('/:id')
   GetOne(@Param('id') id: string): {} {
-    return this.itemsService.FindOneId(+id);
+    return this.languagesService.FindOneId(+id);
   }
 
   @UsePipes(ValidationPipe)
   @Post('/create')
-  async Create(@Req() req, @Body() item: CreatedItemDto) {
+  async Create(@Req() req, @Body() language: CreatedLanguageDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
     }
-    return this.itemsService.Create(item);
+    return this.languagesService.Create(language);
   }
 
   @Post('/delete')
-  async Delete(@Req() req, @Body() deletedItem: DeletedItemDto) {
+  async Delete(@Req() req, @Body() deletedLanguage: DeletedLanguageDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
     }
-    return this.itemsService.Delete(deletedItem.id);
+    return this.languagesService.Delete(deletedLanguage.id);
   }
 
   @Post('/update')
