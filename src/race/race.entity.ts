@@ -1,7 +1,7 @@
 import { Campaign } from "src/campaign/campaign.entity";
 import { Character } from "src/character/character.entity";
 import { Language } from "src/language/language.entity";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, ManyToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm"
 
 @Entity()
 export class Race {
@@ -17,15 +17,15 @@ export class Race {
     @Column({nullable: false})
     size: string;
 
-    @Column({ type:"varchar", nullable: false})
+    @Column({ type:"longtext", nullable: false})
     description: string;
 
-    @OneToOne(() => Character, character => character.race)
+    @OneToMany(() => Character, character => character.race)
     character: Character;
 
-    @ManyToOne(() => Campaign, campaign => campaign.races)
-    campaign: Campaign;
-
-    @OneToMany(() => Language, language => language.race)
+    @ManyToMany(() => Language, {
+        cascade: true,
+    })
+    @JoinTable()
     languages: Language[];
 }

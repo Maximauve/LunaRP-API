@@ -1,30 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
-import { Class } from '../class.entity';
+import { Classes } from '../class.entity';
 import { CreatedClassDto } from '../dto/class.dto';
 
 @Injectable()
 export class ClassService {
     constructor(
-        @InjectRepository(Class)
-        private classRepository: Repository<Class>,
+        @InjectRepository(Classes)
+        private classRepository: Repository<Classes>,
     ) {}
     
-    async GetAll(): Promise<Class[]> {
-        return await this.classRepository.find();
+    async GetAll(): Promise<Classes[]> {
+        return await this.classRepository.find({
+            relations: {
+                spells: true,
+            }
+        });
     }
 
-    FindOneId(id: number): Promise<Class> {
-        return this.classRepository.findOne({ where: {id: id} });
-    }
+    FindOneId(id: number): Promise<Classes> {
+        return this.classRepository.findOne({ 
+            relations: {
+                spells: true,
+            },
+            where: {id: id} });
+        }
 
-    Create(classe: CreatedClassDto): Promise<Class> {
+    Create(classe: CreatedClassDto): Promise<Classes> {
         const newClass = this.classRepository.create(classe);
         return this.classRepository.save(newClass);
     }
 
-    async Delete(id: number): Promise<Class[]> {
+    async Delete(id: number): Promise<Classes[]> {
         let classe = await this.classRepository.findOne({ where: {id: id} });
         return this.classRepository.remove([classe]);
     }

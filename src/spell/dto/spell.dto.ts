@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength, IsInt } from "class-validator"
+import { Classes } from "src/class/class.entity";
 import { isFloat64Array } from "util/types";
 
 export class CreatedSpellDto {
@@ -23,4 +24,7 @@ export class CreatedSpellDto {
 
     @IsNotEmpty()
     description: string;
+
+    @IsNotEmpty()
+    classes: Classes[];
 }

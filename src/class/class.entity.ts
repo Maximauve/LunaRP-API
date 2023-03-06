@@ -1,11 +1,10 @@
 import { Campaign } from "src/campaign/campaign.entity";
 import { Character } from "src/character/character.entity";
-import { Item } from "src/item/item.entity";
 import { Spell } from "src/spell/spell.entity";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne, OneToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne, OneToOne, JoinTable } from "typeorm"
 
 @Entity()
-export class Class {
+export class Classes {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -15,15 +14,12 @@ export class Class {
     @Column({nullable: false})
     dice: number;
 
-    @Column({nullable: false})
+    @Column({ type:"longtext", nullable: false})
     description: string;
 
-    @ManyToMany(() => Spell, spell => spell.class)
+    @ManyToMany(() => Spell, spell => spell.classes)
     spells: Spell[];
 
-    @ManyToOne(() => Campaign, campaign => campaign.classes)
-    campaign: Campaign;
-
-    @OneToOne(() => Character, character => character.class)
-    character: Character;
+    @OneToMany(() => Character, character => character.class)
+    character: Character[];
 }

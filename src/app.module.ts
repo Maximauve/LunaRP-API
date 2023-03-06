@@ -10,7 +10,7 @@ import { Item } from './item/item.entity';
 import { SpellModule } from './spell/spell.module';
 import { Spell } from './spell/spell.entity';
 import { ClassModule } from './class/class.module';
-import { Class } from './class/class.entity';
+import { Classes } from './class/class.entity';
 import { Campaign } from './campaign/campaign.entity';
 import { CampaignModule } from './campaign/campaign.module';
 import { RaceModule } from './race/race.module';
@@ -29,7 +29,7 @@ import { CharacterItem } from './character/character_item.entity';
         username: 'root',
         password: 'root',
         database: 'luna',
-        entities: [User, Character, CharacterItem, Item, Spell, Class, Campaign, Race, Language],
+        entities: [User, Character, CharacterItem, Item, Spell, Classes, Campaign, Race, Language],
         synchronize: true,
       })
     }),

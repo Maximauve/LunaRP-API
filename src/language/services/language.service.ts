@@ -32,4 +32,8 @@ export class LanguagesService {
     async Update(id: number, language: CreatedLanguageDto): Promise<UpdateResult> {
         return await this.languagesRepository.update(id, {...language});
     }
+
+    async findOne(id: number): Promise<Language> {
+        return await this.languagesRepository.findOne({ where: {id: id} });
+    }
 }

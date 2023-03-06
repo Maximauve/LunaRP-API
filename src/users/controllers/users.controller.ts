@@ -39,7 +39,6 @@ export class UsersController {
   
   @Post('/auth/login')
   async login(@Body() body) {
-    console.log(createHash("sha512").update(body.password).digest("hex"))
     let user = await this.usersService.FindOneEmail(body.email);
     if (!user || user.password !== createHash("sha512").update(body.password).digest("hex")) {
       throw new UnauthorizedException();
@@ -65,7 +64,6 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   @Post('/update')
   async Update(@Req() req, @Body() updatedUser: UpdatedUserDto) {
-    if (!req.user || !req.user.id) throw new HttpException('You are not logged in', HttpStatus.UNAUTHORIZED);
     let me = await this.usersService.FindOneId(req.user.id);
     let person = await this.usersService.FindOneId(updatedUser.id);
     if (me.role !== Role.Admin && me.id !== updatedUser.id) {

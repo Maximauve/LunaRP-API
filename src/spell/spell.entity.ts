@@ -1,7 +1,6 @@
 import { Character } from "src/character/character.entity";
-import { Class } from "src/class/class.entity";
-import { Item } from "src/item/item.entity";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne } from "typeorm"
+import { Classes } from "src/class/class.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne, JoinTable } from "typeorm"
 
 @Entity()
 export class Spell {
@@ -29,9 +28,7 @@ export class Spell {
     @Column({nullable: false})
     description: string;
 
-    @ManyToOne(() => Character, character => character.spells)
-    character: Character;
-
-    @ManyToMany(() => Class, classe => classe.spells)
-    class: Class[];
+    @ManyToMany(() => Classes, classes => classes.spells)
+    @JoinTable()
+    classes: Classes[];
 }   

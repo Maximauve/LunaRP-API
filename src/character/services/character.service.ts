@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Character } from '../character.entity';
 import { CreatedCharacterDto } from '../dto/character.dto';
+import { UpdatedCharacterDto } from '../dto/updatedCharacter.dto';
 
 @Injectable()
 export class CharactersService {
@@ -15,8 +16,21 @@ export class CharactersService {
         return await this.charactersRepository.find();
     }
 
+    async FindOneId(id: number): Promise<Character> {
+        return await this.charactersRepository.findOne({ where: {id: id} });
+    }
+
     async Create(character: CreatedCharacterDto) : Promise<Character> {
         const newCharacter = this.charactersRepository.create(character);
         return this.charactersRepository.save(newCharacter);
+    }
+
+    async Delete(id: number): Promise<Character[]> {
+        let character = await this.charactersRepository.findOne({ where: {id: id} });
+        return this.charactersRepository.remove([character]);
+    }
+
+    async Update(character: UpdatedCharacterDto): Promise<Character> {
+        return await this.charactersRepository.save(character);
     }
 }

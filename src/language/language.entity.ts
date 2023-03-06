@@ -11,7 +11,4 @@ export class Language {
 
     @Column({ type:"varchar", nullable: false})
     description: string;
-
-    @ManyToOne(() => Race, race => race.languages)
-    race: Race;
 }   

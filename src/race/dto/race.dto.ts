@@ -3,7 +3,6 @@ import { Language } from "src/language/language.entity";
 
 export class CreatedRaceDto {
     @IsNotEmpty()
-    @MinLength(3)
     name: string;
 
     @IsInt()
@@ -17,5 +16,5 @@ export class CreatedRaceDto {
     description: string;
 
     @IsNotEmpty()
-    language: Language[];
+    languages: Language[];
 }
