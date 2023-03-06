@@ -20,29 +20,31 @@ import { Language } from './language/language.entity';
 import { CharacterItem } from './character/character_item.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'mysql',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: 'root',
-        database: 'luna',
-        entities: [User, Character, CharacterItem, Item, Spell, Classes, Campaign, Race, Language],
-        synchronize: true,
-      })
-    }),
-    UsersModule,
-    CharacterModule,
-    ItemModule,
-    SpellModule,
-    ClassModule,
-    CampaignModule,
-    RaceModule,
-    LanguageModule
-  ],
-  controllers: [],
-  providers: [],
+	imports: [
+		ConfigModule.forRoot(),
+		TypeOrmModule.forRootAsync({
+			useFactory: () => ({
+				type: 'mysql',
+				host: process.env.DB_HOST,
+				port: parseInt(process.env.DB_PORT),
+				username: process.env.DB_USER,
+				password: process.env.DB_PASSWORD,
+				database: process.env.DB_NAME,
+				entities: [__dirname + '/**/*.entity{.ts,.js}'],
+				synchronize: true,
+				autoLoadEntities: true,
+			}),
+		}),
+		UsersModule,
+		CharacterModule,
+		ItemModule,
+		SpellModule,
+		ClassModule,
+		CampaignModule,
+		RaceModule,
+		LanguageModule
+	],
+	controllers: [],
+	providers: [],
 })
-export class AppModule {}
+export class AppModule { }
