@@ -14,11 +14,17 @@ export class ItemsService {
     ) {}
     
     async GetAll(): Promise<Item[]> {
-        return await this.itemsRepository.find();
+        return await this.itemsRepository.find({relations: {
+            character_item: true,
+    }});
     }
 
     FindOneId(id: number): Promise<Item> {
-        return this.itemsRepository.findOne({ where: {id: id} });
+        return this.itemsRepository.findOne({ where: {id: id},
+        relations: {
+            character_item: true,
+        }
+         });
     }
 
     async Create(item: CreatedItemDto, fileData: LocalFileDto): Promise<Item> {

@@ -33,7 +33,8 @@ export class CharactersController {
     private spellsServices: SpellsService, 
     private classServices: ClasseService, 
     private itemsServices: ItemsService,
-    private characterItemServices: CharactersItemService) {}
+    private characterItemServices: CharactersItemService
+    ) {}
 
   @Get()
   GetAll(): {} {
@@ -84,6 +85,7 @@ export class CharactersController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedCharacter: DeletedCharacterDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -95,6 +97,7 @@ export class CharactersController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updatedCharacter: UpdatedCharacterDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let character = await this.charactersService.FindOneId(updatedCharacter.id);
@@ -133,11 +136,37 @@ export class CharactersController {
       updatedCharacter.classe = await this.classServices.FindOneId(classId);
     }
     if (updatedCharacter.inventory) {
-      // updated = ids
-      // normal = entité
-      console.log(character.inventory);
-      // comparer les deux tableaux et ajouter les items qui ne sont pas dans le tableau
-
+      let characterInventory = [];
+      await Promise.all(character.inventory.map(async (item: any) => {
+        let characterItem = await this.characterItemServices.FindOneId(item.id);
+        if (characterItem) characterInventory.push(characterItem.item.id);
+      }));
+      let supp = characterInventory.filter(x => !updatedCharacter.inventory.includes(x));
+      let add = updatedCharacter.inventory.filter(x => !characterInventory.includes(x));
+      let same = updatedCharacter.inventory.filter(x => characterInventory.includes(x));
+      await Promise.all(supp.map(async (item: any) => {
+        let characterItem = await this.characterItemServices.FindOneItemId(item);
+        if (characterItem) await this.characterItemServices.Delete(characterItem.id);
+      }));
+      let characterItemArray: CharacterItem[] = [];      
+      await Promise.all(add.map(async (item: any) => {
+        item = await this.itemsServices.FindOneId(item);
+        if (item) {
+          let newCharacterItem: CreatedCharacterItemDto = {
+            quantity: 1,
+            character: character,
+            item: item
+          }
+          let charac = await this.characterItemServices.Create(newCharacterItem);
+          characterItemArray.push(charac);
+        }
+      }));
+      let sameArray: CharacterItem[] = [];
+      await Promise.all(same.map(async (item: any) => {
+        item = await this.characterItemServices.FindOneItemId(item);
+        if (item) sameArray.push(item);
+      }));
+      updatedCharacter.inventory = characterItemArray.concat(sameArray);
     }
     let newCharacter: UpdatedCharacterDto = {
       id: updatedCharacter.id,

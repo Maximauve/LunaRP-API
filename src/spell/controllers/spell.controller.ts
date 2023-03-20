@@ -47,6 +47,7 @@ export class SpellsController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedSpell: DeletedSpellDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -56,6 +57,7 @@ export class SpellsController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updateSpell: UpdatedSpellDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let spell = await this.spellsService.FindOneId(updateSpell.id);

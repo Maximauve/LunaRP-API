@@ -39,6 +39,7 @@ export class LanguagesController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedLanguage: DeletedLanguageDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -48,6 +49,7 @@ export class LanguagesController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updateLanguage: UpdatedLanguageDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let language = await this.languagesService.FindOneId(updateLanguage.id);

@@ -15,11 +15,28 @@ export class CharactersService {
     ) {}
     
     async GetAll(): Promise<Character[]> {
-        return await this.charactersRepository.find();
+        return await this.charactersRepository.find({
+            relations: {
+                user: true,
+                campaign: true,
+                race: true,
+                spells: true,
+                classe: true,
+                inventory: true,
+            }
+        });
     }
 
     async FindOneId(id: number): Promise<Character> {
-        return await this.charactersRepository.findOne({ where: {id: id} });
+        return await this.charactersRepository.findOne({ where: {id: id},
+            relations: {
+                user: true,
+                campaign: true,
+                race: true,
+                spells: true,
+                classe: true,
+                inventory: true,
+            } });
     }
 
     async Create(character: CreatedCharacterDto) : Promise<Character> {
@@ -28,7 +45,7 @@ export class CharactersService {
     }
 
     async Delete(id: number): Promise<Character[]> {
-        let character = await this.charactersRepository.findOne({ where: {id: id} });
+        let character = await this.charactersRepository.findOne({ where: {id: id}});
         if (!character) {
             return null;
         }

@@ -68,6 +68,7 @@ export class ItemsController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedItem: DeletedItemDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -77,6 +78,7 @@ export class ItemsController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updateItem: UpdatedItemDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let item = await this.itemsService.FindOneId(updateItem.id);

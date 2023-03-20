@@ -38,6 +38,7 @@ export class ClasseController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedClasses: DeletedClasseDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -47,6 +48,7 @@ export class ClasseController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updatedClasses: UpdatedClasseDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let classe = await this.classeService.FindOneId(updatedClasses.id);

@@ -4,6 +4,7 @@ import { Repository, UpdateResult } from 'typeorm';
 import { CharacterItem } from '../character_item.entity';
 import { CreatedCharacterItemDto } from '../dto/characterItem.dto';
 import { UpdatedCharacterItemDto } from '../dto/updatedCharacterItem.dto';
+import { Item } from 'src/item/item.entity';
 
 @Injectable()
 export class CharactersItemService {
@@ -13,11 +14,29 @@ export class CharactersItemService {
     ) {}
 
     async FindOneId(id: number): Promise<CharacterItem> {
-        return await this.charactersItemRepository.findOne({ where: {id: id} });
+        return await this.charactersItemRepository.findOne({ where: {id: id}, 
+            relations: {
+                character: true,
+                item: true
+            }});
     }
 
     async FindAllId(id: number): Promise<CharacterItem[]> {
-        return await this.charactersItemRepository.find({ where: {id: id}, });
+        return await this.charactersItemRepository.find({ where: {id: id},
+            relations: {
+            character: true,
+            item: true
+        } });
+    }
+
+    async FindOneItemId(id: number): Promise<CharacterItem> {
+        return await this.charactersItemRepository.findOne({
+            relations : {
+                item: true,
+                character: true
+            },
+            where: { item : { id : id } }
+        });
     }
 
     async Create(characterItem: CreatedCharacterItemDto) : Promise<CharacterItem> {
@@ -26,7 +45,11 @@ export class CharactersItemService {
     }
 
     async Delete(id: number): Promise<CharacterItem[]> {
-        let characterItem = await this.charactersItemRepository.findOne({ where: {id: id} });
+        let characterItem = await this.charactersItemRepository.findOne({ where: {id: id}, 
+            relations: {
+                character: true,
+                item: true
+            } });
         return this.charactersItemRepository.remove([characterItem]);
     }
 

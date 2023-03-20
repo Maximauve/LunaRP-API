@@ -67,6 +67,7 @@ export class CampaignsController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedCampaign: DeletedCampaignDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -76,6 +77,7 @@ export class CampaignsController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updatedCampaign: UpdatedCampaignDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let campaign = await this.campaignsService.FindOneId(updatedCampaign.id);
