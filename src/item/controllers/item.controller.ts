@@ -50,6 +50,23 @@ export class ItemsController {
     });
   }
 
+  // ⁠curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHRveCIsImlkIjoxLCJpYXQiOjE2NzkzMjE0MjQsImV4cCI6MTY3OTMyNTAyNH0.1RKcZo9m171VFNa0tKGxEZtnHO2kx8N42lowelc-3Dk" -F "file=@AH.png" http://localhost:3000/items/image
+  // curl -i -X POST -H "Content-Type: mutiipart/form-data" -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHRveCIsImlkIjoxLCJpYXQiOjE2NzkzMjE0MjQsImV4cCI6MTY3OTMyNTAyNH0.1RKcZo9m171VFNa0tKGxEZtnHO2kx8N42lowelc-3Dk" -F "file=@AH.png" http://localhost:3000/items/image
+ 
+  @Post('/image')
+  @UseInterceptors(FileInterceptor('file', {
+    dest: './uploads',
+  }))
+  uploadFile(@UploadedFile() file) {
+    // let me = await this.usersService.FindOneId(req.user.id);
+    // if (me.role !== Role.Admin) {
+    //   throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
+    // }
+    console.log("coucou");
+    console.log("file -> ", file);
+    // return this.itemsService.UploadImage(file);
+  }
+
   @Post('/delete')
   async Delete(@Req() req, @Body() deletedItem: DeletedItemDto) {
     let me = await this.usersService.FindOneId(req.user.id);

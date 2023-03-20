@@ -133,6 +133,9 @@ export class CharactersController {
       updatedCharacter.classe = await this.classServices.FindOneId(classId);
     }
     if (updatedCharacter.inventory) {
+      // updated = ids
+      // normal = entité
+      console.log(character.inventory);
       // comparer les deux tableaux et ajouter les items qui ne sont pas dans le tableau
 
     }
