@@ -15,9 +15,8 @@ import { CampaignsService } from 'src/campaign/services/campaign.service';
 import { RacesService } from 'src/race/services/race.service';
 import { Spell } from 'src/spell/spell.entity';
 import { SpellsService } from 'src/spell/services/spell.service';
-import { ClassService } from 'src/class/services/classe.service';
+import { ClasseService } from 'src/class/services/classe.service';
 import { CharacterItem } from '../../characterItem/character_item.entity';
-import { Item } from 'src/item/item.entity';
 import { ItemsService } from 'src/item/services/item.service';
 import { CharactersItemService } from 'src/characterItem/services/characterItem.service';
 import { CreatedCharacterItemDto } from 'src/characterItem/dto/characterItem.dto';
@@ -32,7 +31,7 @@ export class CharactersController {
     private campaignsService: CampaignsService, 
     private racesServices: RacesService, 
     private spellsServices: SpellsService, 
-    private classServices: ClassService, 
+    private classServices: ClasseService, 
     private itemsServices: ItemsService,
     private characterItemServices: CharactersItemService) {}
 
@@ -62,8 +61,8 @@ export class CharactersController {
     }));
     character.spells = spellArray;
     
-    let classId: any = character.class;
-    character.class = await this.classServices.FindOneId(classId);
+    let classId: any = character.classe;
+    character.classe = await this.classServices.FindOneId(classId);
     let characterCreated = await this.charactersService.Create(character);
 
     let characterItemArray: CharacterItem[] = [];
@@ -129,9 +128,9 @@ export class CharactersController {
       }));
       updatedCharacter.spells = spellArray;
     }
-    if (updatedCharacter.class) {
-      let classId: any = updatedCharacter.class;
-      updatedCharacter.class = await this.classServices.FindOneId(classId);
+    if (updatedCharacter.classe) {
+      let classId: any = updatedCharacter.classe;
+      updatedCharacter.classe = await this.classServices.FindOneId(classId);
     }
     if (updatedCharacter.inventory) {
       // comparer les deux tableaux et ajouter les items qui ne sont pas dans le tableau
@@ -153,7 +152,7 @@ export class CharactersController {
       user: updatedCharacter.user ? updatedCharacter.user : character.user,
       campaign: updatedCharacter.campaign ? updatedCharacter.campaign : character.campaign,
       spells: updatedCharacter.spells ? updatedCharacter.spells : character.spells,
-      class: updatedCharacter.class ? updatedCharacter.class : character.class,
+      classe: updatedCharacter.classe ? updatedCharacter.classe : character.classe,
       inventory: updatedCharacter.inventory ? updatedCharacter.inventory : character.inventory,
     }
 

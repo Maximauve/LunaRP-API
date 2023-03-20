@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, MinLength, IsInt } from "class-validator"
 import { Character } from "src/character/character.entity";
-import { Classes } from "src/class/classe.entity";
+import { Classe } from "src/class/classe.entity";
 import { Race } from "src/race/race.entity";
 import { User } from "src/users/users.entity";
 
@@ -18,7 +18,7 @@ export class CreatedCampaignDto {
     game_master: User;
 
     @IsNotEmpty()
-    classes: Classes[];
+    classes: Classe[];
 
     @IsNotEmpty()
     races: Race[];

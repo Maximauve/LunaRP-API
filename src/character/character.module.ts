@@ -9,7 +9,7 @@ import { UsersModule } from 'src/users/users.module';
 import { RaceModule } from 'src/race/race.module';
 import { CampaignModule } from 'src/campaign/campaign.module';
 import { SpellModule } from 'src/spell/spell.module';
-import { ClassModule } from 'src/class/class.module';
+import { ClasseModule } from 'src/class/class.module';
 import { CharacterItemModule } from 'src/characterItem/characterItem.module';
 import { ItemModule } from 'src/item/item.module';
 
@@ -20,7 +20,7 @@ import { ItemModule } from 'src/item/item.module';
     forwardRef(() => CampaignModule), 
     forwardRef(() => RaceModule), 
     forwardRef(() => SpellModule), 
-    forwardRef(() => ClassModule),
+    forwardRef(() => ClasseModule),
     forwardRef(() => ItemModule)],
     controllers: [CharactersController],
     providers: [CharactersService],

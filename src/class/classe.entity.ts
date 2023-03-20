@@ -1,4 +1,3 @@
-import { Campaign } from "src/campaign/campaign.entity";
 import { Character } from "src/character/character.entity";
 import { Spell } from "src/spell/spell.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne, OneToOne, JoinTable } from "typeorm"
@@ -20,6 +19,6 @@ export class Classe {
     @ManyToMany(() => Spell, spell => spell.classes)
     spells: Spell[];
 
-    @OneToMany(() => Character, character => character.class)
+    @OneToMany(() => Character, character => character.classe)
     character: Character[];
 }

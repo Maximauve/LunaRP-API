@@ -1,6 +1,7 @@
 import { Character } from "src/character/character.entity";
 import { CharacterItem } from "src/characterItem/character_item.entity";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from "typeorm"
+import LocalFile from "src/localFile/localFile.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinColumn, OneToOne } from "typeorm"
 
 @Entity()
 export class Item {
@@ -22,8 +23,14 @@ export class Item {
     @Column({nullable: false})
     regeneration: number;
         
-    @Column({nullable: true})
-    image: string;
+    @Column({ nullable: true })
+    itemId?: number;
+
+    @JoinColumn({ name: 'itemId' })
+    @OneToOne(() => LocalFile, {
+      nullable: true
+    })
+    image?: LocalFile;
 
     @Column({type: "longtext", nullable: false})
     description: string;

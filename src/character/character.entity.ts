@@ -1,7 +1,7 @@
 import { Spell } from "src/spell/spell.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm"
 import { CharacterItem } from "../characterItem/character_item.entity";
-import { Classes } from "src/class/classe.entity";
+import { Classe } from "src/class/classe.entity";
 import { Campaign } from "src/campaign/campaign.entity";
 import { User } from "src/users/users.entity";
 import { Race } from "src/race/race.entity";
@@ -58,8 +58,8 @@ export class Character {
     @JoinTable()
     spells: Spell[];
 
-    @ManyToOne(() => Classes, classes => classes.character)
-    class: Classes;
+    @ManyToOne(() => Classe, classes => classes.character)
+    classe: Classe;
     
     @OneToMany(() => CharacterItem, characterItem => characterItem.character, {
         onDelete: "CASCADE"
