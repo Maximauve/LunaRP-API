@@ -8,8 +8,8 @@ import { HttpException, UnauthorizedException } from '@nestjs/common/exceptions'
 import { HttpStatus } from '@nestjs/common/enums';
 import { UsersService } from 'src/users/services/users.service';
 import { Role } from 'src/users/role.enum';
-import { Classes } from 'src/class/class.entity';
-import { ClassService } from 'src/class/services/class.service';
+import { Classes } from 'src/class/classe.entity';
+import { ClassService } from 'src/class/services/classe.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { DeletedSpellDto } from '../dto/DeletedClass.dto';
 import { UpdatedSpellDto } from '../dto/updatedClass.dto';

@@ -1,8 +1,8 @@
 import { IsInt, IsNotEmpty } from "class-validator"
 import { PartialType } from "@nestjs/mapped-types";
-import { CreatedClassDto } from "./class.dto";
+import { CreatedClasseDto } from "./classe.dto";
 
-export class UpdatedClassDto extends PartialType(CreatedClassDto) {
+export class UpdatedClasseDto extends PartialType(CreatedClasseDto) {
     @IsNotEmpty()
     @IsInt()
     id: number;

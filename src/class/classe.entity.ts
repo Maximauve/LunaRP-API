@@ -4,7 +4,7 @@ import { Spell } from "src/spell/spell.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne, OneToOne, JoinTable } from "typeorm"
 
 @Entity()
-export class Classes {
+export class Classe {
     @PrimaryGeneratedColumn()
     id: number;
 

@@ -15,7 +15,7 @@ import { CampaignsService } from 'src/campaign/services/campaign.service';
 import { RacesService } from 'src/race/services/race.service';
 import { Spell } from 'src/spell/spell.entity';
 import { SpellsService } from 'src/spell/services/spell.service';
-import { ClassService } from 'src/class/services/class.service';
+import { ClassService } from 'src/class/services/classe.service';
 import { CharacterItem } from '../../characterItem/character_item.entity';
 import { Item } from 'src/item/item.entity';
 import { ItemsService } from 'src/item/services/item.service';

@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, MinLength, IsInt } from "class-validator"
 import { Character } from "src/character/character.entity";
-import { Classes } from "src/class/class.entity";
+import { Classes } from "src/class/classe.entity";
 import { Race } from "src/race/race.entity";
 import { User } from "src/users/users.entity";
 

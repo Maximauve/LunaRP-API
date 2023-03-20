@@ -5,7 +5,7 @@ import { UsersModule } from './users/users.module';
 import { CharacterModule } from './character/character.module';
 import { ItemModule } from './item/item.module';
 import { SpellModule } from './spell/spell.module';
-import { ClassModule } from './class/class.module';
+import { ClasseModule } from './class/class.module';
 import { CampaignModule } from './campaign/campaign.module';
 import { RaceModule } from './race/race.module';
 import { LanguageModule } from './language/language.module';
@@ -31,7 +31,7 @@ import { CharacterItemModule } from './characterItem/characterItem.module';
 		CharacterModule,
 		ItemModule,
 		SpellModule,
-		ClassModule,
+		ClasseModule,
 		CampaignModule,
 		RaceModule,
 		LanguageModule,
