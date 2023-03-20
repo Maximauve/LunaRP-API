@@ -1,6 +1,6 @@
 import { Spell } from "src/spell/spell.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm"
-import { CharacterItem } from "./character_item.entity";
+import { CharacterItem } from "../characterItem/character_item.entity";
 import { Classes } from "src/class/class.entity";
 import { Campaign } from "src/campaign/campaign.entity";
 import { User } from "src/users/users.entity";
@@ -44,9 +44,6 @@ export class Character {
     @Column({nullable: false})
     description: string;
 
-    @Column({nullable: false})
-    inventory: number;
-
     @ManyToOne(() => User, user => user.characters)
     user: User;
 
@@ -64,6 +61,8 @@ export class Character {
     @ManyToOne(() => Classes, classes => classes.character)
     class: Classes;
     
-    @OneToMany(() => CharacterItem, characterItem => characterItem.character)
-    character_item: CharacterItem[];
+    @OneToMany(() => CharacterItem, characterItem => characterItem.character, {
+        onDelete: "CASCADE"
+    })
+    inventory: CharacterItem[];
 }   

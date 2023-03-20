@@ -1,5 +1,5 @@
 import { Character } from "src/character/character.entity";
-import { CharacterItem } from "src/character/character_item.entity";
+import { CharacterItem } from "src/characterItem/character_item.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from "typeorm"
 
 @Entity()
