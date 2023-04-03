@@ -46,7 +46,8 @@ export class UsersController {
     return {
 			"username": user.username,
 			"email": user.email,
-			"token": (await this.authService.Login(user)).access_token
+			"token": (await this.authService.Login(user)).access_token,
+			"role": user.role,
 		};
 	}
 
