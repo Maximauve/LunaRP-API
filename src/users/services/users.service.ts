@@ -12,7 +12,12 @@ export class UsersService {
     ) {}
     
     async GetAll(): Promise<User[]> {
-        return await this.usersRepository.find();
+        return await this.usersRepository.find({
+            relations: {
+                characters: true,
+                campaigns: true
+            }
+        });
     }
 
     Create(user: CreatedUserDto): Promise<User> {
@@ -21,11 +26,19 @@ export class UsersService {
     }
 
     FindOneEmail(email: string): Promise<User> {
-        return this.usersRepository.findOne({ where: {email: email} });
+        return this.usersRepository.findOne({ where: {email: email},
+            relations: {
+                characters: true,
+                campaigns: true
+            }  });
     }
 
     FindOneId(id: number): Promise<User> {
-        return this.usersRepository.findOne({ where: {id: id} });
+        return this.usersRepository.findOne({ where: {id: id},
+        relations: {
+            characters: true,
+            campaigns: true
+        } });
     }
 
     async Delete(id: number): Promise<User[]> {

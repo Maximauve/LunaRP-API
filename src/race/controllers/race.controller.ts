@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Get, Req, Logger, Param } from '@nestjs/common';
+import { Body, Controller, Post, Get, Req, Logger, Param, ValidationPipe } from '@nestjs/common';
 import { RacesService } from '../services/race.service';
-import { UseGuards } from '@nestjs/common/decorators';
+import { UseGuards, UsePipes } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreatedRaceDto } from '../dto/race.dto';
 import { UsersService } from 'src/users/services/users.service';
@@ -29,6 +29,7 @@ export class RacesController {
   }
 
   @Post('/create')
+  @UsePipes(ValidationPipe)
   async Create(@Req() req, @Body() race: CreatedRaceDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -44,6 +45,7 @@ export class RacesController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedRace: DeletedRaceDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -53,6 +55,7 @@ export class RacesController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updateRace: UpdatedRaceDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let race = await this.racesService.FindOneId(updateRace.id);

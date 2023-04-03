@@ -20,9 +20,13 @@ export class User {
     @Column({ type: "varchar", default: Role.User, nullable: false})
     role: Role;
     
-    @OneToMany(() => Campaign, campaign => campaign.game_master)
+    @OneToMany(() => Campaign, campaign => campaign.game_master, {
+        cascade: true
+    })
     campaigns: Campaign[];
 
-    @OneToMany(() => Character, character => character.user)
+    @OneToMany(() => Character, character => character.user, {
+        cascade: true
+    })
     characters: Character[];
 }   

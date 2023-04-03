@@ -11,18 +11,17 @@ import { UsersService } from 'src/users/services/users.service';
 import { Role } from 'src/users/role.enum';
 import { DeletedCampaignDto } from '../dto/deletedCampaign.dto';
 import { UpdatedCampaignDto } from '../dto/updatedCampaign.dto';
-import { Classes } from 'src/class/class.entity';
-import { ClassService } from 'src/class/services/class.service';
+import { Classe } from 'src/class/classe.entity';
+import { ClasseService } from 'src/class/services/classe.service';
 import { Race } from 'src/race/race.entity';
 import { RacesService } from 'src/race/services/race.service';
 import { Character } from 'src/character/character.entity';
-import { CampaignModule } from '../campaign.module';
  
 @UseGuards(JwtAuthGuard)
 @Controller('campaigns')
 export class CampaignsController {
 
-  constructor(private campaignsService: CampaignsService, private usersService: UsersService, private classService: ClassService, private racesService: RacesService) {}
+  constructor(private campaignsService: CampaignsService, private usersService: UsersService, private classService: ClasseService, private racesService: RacesService) {}
 
   @Get()
   GetAll(): {} {
@@ -45,7 +44,7 @@ export class CampaignsController {
     }
     let id: any = campaign.game_master
     campaign.game_master = await this.usersService.FindOneId(id);
-    let classArray: Classes[] = [];
+    let classArray: Classe[] = [];
     await Promise.all(campaign.classes.map(async (classe: any) => {
       classe = await this.classService.FindOneId(classe);
       if (classe) classArray.push(classe);
@@ -68,6 +67,7 @@ export class CampaignsController {
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedCampaign: DeletedCampaignDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
@@ -77,6 +77,7 @@ export class CampaignsController {
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updatedCampaign: UpdatedCampaignDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let campaign = await this.campaignsService.FindOneId(updatedCampaign.id);
@@ -90,7 +91,7 @@ export class CampaignsController {
       updatedCampaign.game_master = await this.usersService.FindOneId(id);
     }
     if (updatedCampaign.classes) {
-      let classArray: Classes[] = [];
+      let classArray: Classe[] = [];
       await Promise.all(updatedCampaign.classes.map(async (classe: any) => {
         classe = await this.classService.FindOneId(classe);
         if (classe) classArray.push(classe);

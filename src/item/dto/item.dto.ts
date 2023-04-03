@@ -20,8 +20,6 @@ export class CreatedItemDto {
     @IsNotEmpty()
     regeneration: number;
 
-    image?: string;
-
     @IsNotEmpty()
     description: string;
 }

@@ -1,8 +1,6 @@
 import { Character } from "src/character/character.entity";
-import { Classes } from "src/class/class.entity";
-import { Item } from "src/item/item.entity";
+import { Classe } from "src/class/classe.entity";
 import { Race } from "src/race/race.entity";
-import { Spell } from "src/spell/spell.entity";
 import { User } from "src/users/users.entity";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, ManyToOne, JoinTable } from "typeorm"
 
@@ -23,11 +21,11 @@ export class Campaign {
     @ManyToOne(() => User, user => user.campaigns)
     game_master: User;
 
-    @ManyToMany(() => Classes, {
+    @ManyToMany(() => Classe, {
         cascade: true,
     })
     @JoinTable()
-    classes: Classes[];
+    classes: Classe[];
     
     @ManyToMany(() => Race, {
         cascade: true,
@@ -36,5 +34,5 @@ export class Campaign {
     races: Race[];
 
     @ManyToMany(() => Character, character => character.campaign)
-    characters: Character[]
+    characters: Character[];
 }   

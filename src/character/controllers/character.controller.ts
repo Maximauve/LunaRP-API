@@ -15,14 +15,26 @@ import { CampaignsService } from 'src/campaign/services/campaign.service';
 import { RacesService } from 'src/race/services/race.service';
 import { Spell } from 'src/spell/spell.entity';
 import { SpellsService } from 'src/spell/services/spell.service';
-import { ClassService } from 'src/class/services/class.service';
+import { ClasseService } from 'src/class/services/classe.service';
+import { CharacterItem } from '../../characterItem/character_item.entity';
+import { ItemsService } from 'src/item/services/item.service';
+import { CharactersItemService } from 'src/characterItem/services/characterItem.service';
+import { CreatedCharacterItemDto } from 'src/characterItem/dto/characterItem.dto';
 
 
 @Controller('characters')
 @UseGuards(JwtAuthGuard)
 export class CharactersController {
 
-  constructor(private charactersService: CharactersService, private usersService: UsersService, private campaignsService: CampaignsService, private racesServices: RacesService, private spellsServices: SpellsService, private classServices: ClassService) {}
+  constructor(private charactersService: CharactersService, 
+    private usersService: UsersService, 
+    private campaignsService: CampaignsService, 
+    private racesServices: RacesService, 
+    private spellsServices: SpellsService, 
+    private classServices: ClasseService, 
+    private itemsServices: ItemsService,
+    private characterItemServices: CharactersItemService
+    ) {}
 
   @Get()
   GetAll(): {} {
@@ -42,29 +54,50 @@ export class CharactersController {
     let raceId: any = character.race;
     character.race = await this.racesServices.FindOneId(raceId);
     character.campaign = [];
-
+    
     let spellArray: Spell[] = [];
     await Promise.all(character.spells.map(async (spell: any) => {
       spell = await this.spellsServices.FindOneId(spell);
       if (spell) spellArray.push(spell);
     }));
     character.spells = spellArray;
+    
+    let classId: any = character.classe;
+    character.classe = await this.classServices.FindOneId(classId);
+    let characterCreated = await this.charactersService.Create(character);
 
-    let classId: any = character.class;
-    character.class = await this.classServices.FindOneId(classId);
-    return this.charactersService.Create(character);
+    let characterItemArray: CharacterItem[] = [];
+    await Promise.all(character.inventory.map(async (item: any) => {
+      item = await this.itemsServices.FindOneId(item);
+      if (item) {
+        let newCharacterItem: CreatedCharacterItemDto = {
+          quantity: 1,
+          character: characterCreated,
+          item: item
+        }
+        let charac = await this.characterItemServices.Create(newCharacterItem);
+        characterItemArray.push(charac);
+      }
+    }));
+    characterCreated.inventory = characterItemArray;
+    await this.charactersService.Update(characterCreated);
+    return characterCreated;
   }
 
   @Post('/delete')
+  @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedCharacter: DeletedCharacterDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
     }
-    return this.charactersService.Delete(deletedCharacter.id);
+    let character = await this.charactersService.Delete(deletedCharacter.id)
+    if (!character) throw new HttpException('This character does not exist', HttpStatus.NOT_FOUND);
+    return character;
   }
 
   @Post('/update')
+  @UsePipes(ValidationPipe)
   async Update(@Req() req, @Body() updatedCharacter: UpdatedCharacterDto) {
     let me = await this.usersService.FindOneId(req.user.id);
     let character = await this.charactersService.FindOneId(updatedCharacter.id);
@@ -98,9 +131,42 @@ export class CharactersController {
       }));
       updatedCharacter.spells = spellArray;
     }
-    if (updatedCharacter.class) {
-      let classId: any = updatedCharacter.class;
-      updatedCharacter.class = await this.classServices.FindOneId(classId);
+    if (updatedCharacter.classe) {
+      let classId: any = updatedCharacter.classe;
+      updatedCharacter.classe = await this.classServices.FindOneId(classId);
+    }
+    if (updatedCharacter.inventory) {
+      let characterInventory = [];
+      await Promise.all(character.inventory.map(async (item: any) => {
+        let characterItem = await this.characterItemServices.FindOneId(item.id);
+        if (characterItem) characterInventory.push(characterItem.item.id);
+      }));
+      let supp = characterInventory.filter(x => !updatedCharacter.inventory.includes(x));
+      let add = updatedCharacter.inventory.filter(x => !characterInventory.includes(x));
+      let same = updatedCharacter.inventory.filter(x => characterInventory.includes(x));
+      await Promise.all(supp.map(async (item: any) => {
+        let characterItem = await this.characterItemServices.FindOneItemId(item);
+        if (characterItem) await this.characterItemServices.Delete(characterItem.id);
+      }));
+      let characterItemArray: CharacterItem[] = [];      
+      await Promise.all(add.map(async (item: any) => {
+        item = await this.itemsServices.FindOneId(item);
+        if (item) {
+          let newCharacterItem: CreatedCharacterItemDto = {
+            quantity: 1,
+            character: character,
+            item: item
+          }
+          let charac = await this.characterItemServices.Create(newCharacterItem);
+          characterItemArray.push(charac);
+        }
+      }));
+      let sameArray: CharacterItem[] = [];
+      await Promise.all(same.map(async (item: any) => {
+        item = await this.characterItemServices.FindOneItemId(item);
+        if (item) sameArray.push(item);
+      }));
+      updatedCharacter.inventory = characterItemArray.concat(sameArray);
     }
     let newCharacter: UpdatedCharacterDto = {
       id: updatedCharacter.id,
@@ -118,7 +184,8 @@ export class CharactersController {
       user: updatedCharacter.user ? updatedCharacter.user : character.user,
       campaign: updatedCharacter.campaign ? updatedCharacter.campaign : character.campaign,
       spells: updatedCharacter.spells ? updatedCharacter.spells : character.spells,
-      class: updatedCharacter.class ? updatedCharacter.class : character.class,
+      classe: updatedCharacter.classe ? updatedCharacter.classe : character.classe,
+      inventory: updatedCharacter.inventory ? updatedCharacter.inventory : character.inventory,
     }
 
     return this.charactersService.Update(newCharacter);
