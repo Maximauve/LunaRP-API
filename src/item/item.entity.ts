@@ -28,7 +28,8 @@ export class Item {
 
     @JoinColumn({ name: 'itemId' })
     @OneToOne(() => LocalFile, {
-      nullable: true
+      nullable: true,
+      cascade:true
     })
     image?: LocalFile;
 

@@ -5,6 +5,7 @@ import { Character } from '../character.entity';
 import { CreatedCharacterDto } from '../dto/character.dto';
 import { UpdatedCharacterDto } from '../dto/updatedCharacter.dto';
 import { CharactersItemService } from 'src/characterItem/services/characterItem.service';
+import LocalFilesService from 'src/localFile/localFile.service';
 
 @Injectable()
 export class CharactersService {
@@ -12,6 +13,7 @@ export class CharactersService {
         @InjectRepository(Character)
         private charactersRepository: Repository<Character>,
         private charactersItemService: CharactersItemService,
+        private localFilesService: LocalFilesService,
     ) {}
     
     async GetAll(): Promise<Character[]> {
@@ -44,6 +46,14 @@ export class CharactersService {
         return this.charactersRepository.save(newCharacter);
     }
 
+    async CreateWithFile(character: CreatedCharacterDto, fileData: LocalFileDto): Promise<Character> {
+        const newCharacter = this.charactersRepository.create(character);
+        let characterCreated = await this.charactersRepository.save(newCharacter);
+        const image = await this.localFilesService.saveLocalFileData(fileData);
+        await this.charactersRepository.update(characterCreated.id, {characterId: image.id});
+        return characterCreated;
+    }
+
     async Delete(id: number): Promise<Character[]> {
         let character = await this.charactersRepository.findOne({ where: {id: id}});
         if (!character) {
@@ -54,5 +64,10 @@ export class CharactersService {
 
     async Update(character: UpdatedCharacterDto): Promise<Character> {
         return await this.charactersRepository.save(character);
+    }
+
+    async UpdateWithFile(id: number, fileData: LocalFileDto): Promise<UpdateResult> {
+        const image = await this.localFilesService.saveLocalFileData(fileData);
+        return await this.charactersRepository.update(id, {characterId: image.id});
     }
 }

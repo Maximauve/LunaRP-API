@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, OneToOne } from "typeorm"
 import { Role } from "./role.enum";
 import { Campaign } from "src/campaign/campaign.entity";
 import { Character } from "src/character/character.entity";
+import LocalFile from "src/localFile/localFile.entity";
 
 @Entity()
 export class User {
@@ -16,6 +17,16 @@ export class User {
 
     @Column({ type: "varchar", nullable: false})
     password: string;
+
+    @Column({ nullable: true })
+    userId?: number;
+
+    @JoinColumn({ name: 'userId' })
+    @OneToOne(() => LocalFile, {
+      nullable: true,
+      cascade:true
+    })
+    image?: LocalFile;
     
     @Column({ type: "varchar", default: Role.User, nullable: false})
     role: Role;

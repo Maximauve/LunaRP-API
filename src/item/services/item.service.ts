@@ -27,7 +27,12 @@ export class ItemsService {
          });
     }
 
-    async Create(item: CreatedItemDto, fileData: LocalFileDto): Promise<Item> {
+    async Create(item: CreatedItemDto): Promise<Item> {
+        const newItem = this.itemsRepository.create(item);
+        return this.itemsRepository.save(newItem);
+    }
+
+    async CreateWithFile(item: CreatedItemDto, fileData: LocalFileDto): Promise<Item> {
         const newItem = this.itemsRepository.create(item);
         let itemCreated = await this.itemsRepository.save(newItem);
         const image = await this.localFilesService.saveLocalFileData(fileData);
@@ -42,5 +47,10 @@ export class ItemsService {
 
     async Update(id: number, item: CreatedItemDto): Promise<UpdateResult> {
         return await this.itemsRepository.update(id, {...item});
+    }
+
+    async UpdateWithFile(id: number, fileData: LocalFileDto): Promise<UpdateResult> {
+        const image = await this.localFilesService.saveLocalFileData(fileData);
+        return await this.itemsRepository.update(id, {itemId: image.id});
     }
 }

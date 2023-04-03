@@ -5,13 +5,14 @@ import { Classe } from "src/class/classe.entity";
 import { Campaign } from "src/campaign/campaign.entity";
 import { User } from "src/users/users.entity";
 import { Race } from "src/race/race.entity";
+import LocalFile from "src/localFile/localFile.entity";
 
 @Entity()
 export class Character {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "varchar", unique: true, nullable: false})
+    @Column({ type: "varchar", nullable: false})
     name: string;
 
     @Column({nullable: false})
@@ -60,6 +61,16 @@ export class Character {
 
     @ManyToOne(() => Classe, classes => classes.character)
     classe: Classe;
+
+    @Column({ nullable: true })
+    characterId?: number;
+
+    @JoinColumn({ name: 'characterId' })
+    @OneToOne(() => LocalFile, {
+      nullable: true,
+      cascade:true
+    })
+    image?: LocalFile;
     
     @OneToMany(() => CharacterItem, characterItem => characterItem.character, {
         onDelete: "CASCADE"

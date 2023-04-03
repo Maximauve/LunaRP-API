@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Get, Param, Req } from '@nestjs/common';
-import { UseGuards, UsePipes } from '@nestjs/common/decorators';
+import { UploadedFile, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common/decorators';
 import { CharactersService } from '../services/character.service';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -20,6 +20,11 @@ import { CharacterItem } from '../../characterItem/character_item.entity';
 import { ItemsService } from 'src/item/services/item.service';
 import { CharactersItemService } from 'src/characterItem/services/characterItem.service';
 import { CreatedCharacterItemDto } from 'src/characterItem/dto/characterItem.dto';
+import LocalFilesService from 'src/localFile/localFile.service';
+import LocalFilesInterceptor from 'src/localFile/localFile.interceptor';
+import { Character } from '../character.entity';
+import LocalFile from 'src/localFile/localFile.entity';
+import { CharacterFileDto } from '../dto/characterFile.dto';
 
 
 @Controller('characters')
@@ -33,26 +38,61 @@ export class CharactersController {
     private spellsServices: SpellsService, 
     private classServices: ClasseService, 
     private itemsServices: ItemsService,
-    private characterItemServices: CharactersItemService
+    private characterItemServices: CharactersItemService,
+    private localFileService: LocalFilesService
     ) {}
 
   @Get()
-  GetAll(): {} {
-    return this.charactersService.GetAll();
+  async GetAll() {
+    let characters = await this.charactersService.GetAll();
+    let newCharacterArray = [];
+    await Promise.all(characters.map(async (character: any) => {
+      if (character.characterId) {
+        let localFile = await this.localFileService.getFileById(character.characterId);
+        let newCharacter: CharacterFileDto = {
+          ...character,
+          path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+        }
+        newCharacterArray.push(newCharacter);
+      } else {
+        newCharacterArray.push(character);
+      }
+    }));
+    return newCharacterArray;
   }
 
   @Get('/:id')
-  GetOne(@Param('id') id: string): {} {
-    return this.charactersService.FindOneId(+id);
+  async GetOne(@Param('id') id: string) {
+    let character = await this.charactersService.FindOneId(+id);
+    let localFile: LocalFile;
+    if (!character) {
+      throw new HttpException('Character not found', HttpStatus.NOT_FOUND);
+    } else if (character.characterId) { 
+      localFile = await this.localFileService.getFileById(character.characterId);
+      let newCharacter: CharacterFileDto = {
+        ...character,
+        path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+      }
+      return newCharacter;
+    }
+    return character;
   }
 
   @UsePipes(ValidationPipe)
   @Post('/create')
-  async Create(@Req() req, @Body() character: CreatedCharacterDto) {
+  @UseInterceptors(LocalFilesInterceptor({
+    fieldName: 'file',
+    path:'/characters'
+  }))
+  async Create(@Req() req, @Body() character: CreatedCharacterDto, @UploadedFile() file?: Express.Multer.File) {
     let me = await this.usersService.FindOneId(req.user.id);
-    character.user = await this.usersService.FindOneId(me.id);
+    if (await this.usersService.FindOneId(me.id)) character.user = await this.usersService.FindOneId(me.id);
+    else throw new HttpException('This user does not exist', HttpStatus.NOT_FOUND);
     let raceId: any = character.race;
     character.race = await this.racesServices.FindOneId(raceId);
+    if (!character.race) {
+      throw new HttpException('This race not exist', HttpStatus.NOT_FOUND);
+    }
     character.campaign = [];
     
     let spellArray: Spell[] = [];
@@ -64,7 +104,19 @@ export class CharactersController {
     
     let classId: any = character.classe;
     character.classe = await this.classServices.FindOneId(classId);
-    let characterCreated = await this.charactersService.Create(character);
+    if (!character.classe) {
+      throw new HttpException('This class not exist', HttpStatus.NOT_FOUND);
+    }
+    let characterCreated: Character;
+    if (file) {
+      characterCreated = await this.charactersService.CreateWithFile(character, {
+        path: file.path,
+        mimetype: file.mimetype,
+        filename: file.originalname,
+      })
+    } else {
+      characterCreated = await this.charactersService.Create(character);
+    }
 
     let characterItemArray: CharacterItem[] = [];
     await Promise.all(character.inventory.map(async (item: any) => {
@@ -98,7 +150,11 @@ export class CharactersController {
 
   @Post('/update')
   @UsePipes(ValidationPipe)
-  async Update(@Req() req, @Body() updatedCharacter: UpdatedCharacterDto) {
+  @UseInterceptors(LocalFilesInterceptor({
+    fieldName: 'file',
+    path:'/characters'
+  }))
+  async Update(@Req() req, @Body() updatedCharacter: UpdatedCharacterDto, @UploadedFile() file?: Express.Multer.File) {
     let me = await this.usersService.FindOneId(req.user.id);
     let character = await this.charactersService.FindOneId(updatedCharacter.id);
     if (me.role !== Role.Admin) {
@@ -108,7 +164,8 @@ export class CharactersController {
     }
     if (updatedCharacter.user) {
       let id: any = updatedCharacter.user;
-      updatedCharacter.user = await this.usersService.FindOneId(id);
+      if (await this.usersService.FindOneId(id)) updatedCharacter.user = await this.usersService.FindOneId(id);
+      else throw new HttpException('This user does not exist', HttpStatus.NOT_FOUND);
     }
     if (updatedCharacter.campaign) {
       updatedCharacter.campaign = [...updatedCharacter.campaign, ...character.campaign]
@@ -121,7 +178,8 @@ export class CharactersController {
     }
     if (updatedCharacter.race) {
       let raceId: any = updatedCharacter.race;
-      updatedCharacter.race = await this.racesServices.FindOneId(raceId);
+      if (await this.racesServices.FindOneId(raceId)) updatedCharacter.race = await this.racesServices.FindOneId(raceId);
+      else throw new HttpException('This race does not exist', HttpStatus.NOT_FOUND);
     }
     if (updatedCharacter.spells) {
       let spellArray: Spell[] = [];
@@ -133,7 +191,8 @@ export class CharactersController {
     }
     if (updatedCharacter.classe) {
       let classId: any = updatedCharacter.classe;
-      updatedCharacter.classe = await this.classServices.FindOneId(classId);
+      if (await this.classServices.FindOneId(classId)) updatedCharacter.classe = await this.classServices.FindOneId(classId);
+      else throw new HttpException('This class does not exist', HttpStatus.NOT_FOUND);
     }
     if (updatedCharacter.inventory) {
       let characterInventory = [];
@@ -167,6 +226,14 @@ export class CharactersController {
         if (item) sameArray.push(item);
       }));
       updatedCharacter.inventory = characterItemArray.concat(sameArray);
+    }
+    if (file) {
+      await this.charactersService.UpdateWithFile(updatedCharacter.id, {
+        path: file.path,
+        filename: file.originalname,
+        mimetype: file.mimetype
+      });
+      if (character.characterId) await this.localFileService.deleteFileById(character.characterId);
     }
     let newCharacter: UpdatedCharacterDto = {
       id: updatedCharacter.id,

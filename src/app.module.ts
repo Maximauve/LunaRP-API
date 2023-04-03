@@ -10,6 +10,7 @@ import { CampaignModule } from './campaign/campaign.module';
 import { RaceModule } from './race/race.module';
 import { LanguageModule } from './language/language.module';
 import { CharacterItemModule } from './characterItem/characterItem.module';
+import { LocalFileModule } from './localFile/localFile.module';
 
 @Module({
 	imports: [
@@ -35,7 +36,8 @@ import { CharacterItemModule } from './characterItem/characterItem.module';
 		CampaignModule,
 		RaceModule,
 		LanguageModule,
-		CharacterItemModule
+		CharacterItemModule,
+		LocalFileModule
 	],
 	controllers: [],
 	providers: [],

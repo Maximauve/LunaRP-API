@@ -12,6 +12,7 @@ import { SpellModule } from 'src/spell/spell.module';
 import { ClasseModule } from 'src/class/class.module';
 import { CharacterItemModule } from 'src/characterItem/characterItem.module';
 import { ItemModule } from 'src/item/item.module';
+import { LocalFileModule } from 'src/localFile/localFile.module';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Character]), 
@@ -21,7 +22,8 @@ import { ItemModule } from 'src/item/item.module';
     forwardRef(() => RaceModule), 
     forwardRef(() => SpellModule), 
     forwardRef(() => ClasseModule),
-    forwardRef(() => ItemModule)],
+    forwardRef(() => ItemModule),
+    forwardRef(() => LocalFileModule)],
     controllers: [CharactersController],
     providers: [CharactersService],
     exports: [CharactersService],

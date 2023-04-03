@@ -10,24 +10,51 @@ import { HttpException, UnauthorizedException } from '@nestjs/common/exceptions'
 import { HttpStatus } from '@nestjs/common/enums';
 import { DeletedItemDto } from '../dto/deletedItem.dto';
 import { UpdatedItemDto } from '../dto/updateItem.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import LocalFilesInterceptor from 'src/localFile/localFile.interceptor';
+import LocalFilesService from 'src/localFile/localFile.service';
+import LocalFile from 'src/localFile/localFile.entity';
+import { ItemFileDto } from '../dto/itemFile.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('items')
 export class ItemsController {
 
-  constructor(private itemsService: ItemsService, private usersService: UsersService) {}
+  constructor(private itemsService: ItemsService, private usersService: UsersService, private localFileService: LocalFilesService) {}
 
   @Get()
-  GetAll(): {} {
-    return this.itemsService.GetAll();
+  async GetAll() {
+    let items = await this.itemsService.GetAll();
+    let newItemArray = [];
+    await Promise.all(items.map(async (item: any) => {
+      if (item.itemId) {
+        let localFile = await this.localFileService.getFileById(item.itemId);
+        let newItem: ItemFileDto = {
+          ...item,
+          path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+        }
+        newItemArray.push(newItem);
+      } else {
+        newItemArray.push(item);
+      }
+    }));
+    return newItemArray;
   }
 
   @Get('/:id')
-  GetOne(@Param('id') id: string): {} {
-    return this.itemsService.FindOneId(+id);
+  async GetOne(@Param('id') id: string) {
+    let item = await this.itemsService.FindOneId(+id);
+    let localFile: LocalFile;
+    if (!item) {
+      throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
+    } else if (item.itemId) { 
+      localFile = await this.localFileService.getFileById(item.itemId);
+      let newItem: ItemFileDto = {
+        ...item,
+        path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+      }
+      return newItem;
+    }
+    return item;
   }
 
   @UsePipes(ValidationPipe)
@@ -36,35 +63,18 @@ export class ItemsController {
     fieldName: 'file',
     path:'/items'
   }))
-  async Create(@Req() req, @Body() item: CreatedItemDto, @UploadedFile() file: Express.Multer.File) {
-    console.log("cc");
+  async Create(@Req() req, @Body() item: CreatedItemDto, @UploadedFile() file?: Express.Multer.File) {
     let me = await this.usersService.FindOneId(req.user.id);
     if (me.role !== Role.Admin) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
+    } else if (!file) {
+      return this.itemsService.Create(item);
     }
-    console.log(file);
-    return this.itemsService.Create(item, {
+    return this.itemsService.CreateWithFile(item, {
       path: file.path,
       filename: file.originalname,
       mimetype: file.mimetype
     });
-  }
-
-  // ⁠curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHRveCIsImlkIjoxLCJpYXQiOjE2NzkzMjE0MjQsImV4cCI6MTY3OTMyNTAyNH0.1RKcZo9m171VFNa0tKGxEZtnHO2kx8N42lowelc-3Dk" -F "file=@AH.png" http://localhost:3000/items/image
-  // curl -i -X POST -H "Content-Type: mutiipart/form-data" -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHRveCIsImlkIjoxLCJpYXQiOjE2NzkzMjE0MjQsImV4cCI6MTY3OTMyNTAyNH0.1RKcZo9m171VFNa0tKGxEZtnHO2kx8N42lowelc-3Dk" -F "file=@AH.png" http://localhost:3000/items/image
- 
-  @Post('/image')
-  @UseInterceptors(FileInterceptor('file', {
-    dest: './uploads',
-  }))
-  uploadFile(@UploadedFile() file) {
-    // let me = await this.usersService.FindOneId(req.user.id);
-    // if (me.role !== Role.Admin) {
-    //   throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-    // }
-    console.log("coucou");
-    console.log("file -> ", file);
-    // return this.itemsService.UploadImage(file);
   }
 
   @Post('/delete')
@@ -79,13 +89,24 @@ export class ItemsController {
 
   @Post('/update')
   @UsePipes(ValidationPipe)
-  async Update(@Req() req, @Body() updateItem: UpdatedItemDto) {
+  @UseInterceptors(LocalFilesInterceptor({
+    fieldName: 'file',
+    path:'/items'
+  }))
+  async Update(@Req() req, @Body() updateItem: UpdatedItemDto, @UploadedFile() file?: Express.Multer.File) {
     let me = await this.usersService.FindOneId(req.user.id);
-    let item = await this.itemsService.FindOneId(updateItem.id);
+    let item = await this.itemsService.FindOneId(updateItem.id);  
     if (me.role !== Role.Admin) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
     } else if (!item) {
       throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
+    } else if (file) {
+      await this.itemsService.UpdateWithFile(updateItem.id, {
+        path: file.path,
+        filename: file.originalname,
+        mimetype: file.mimetype
+      });
+      if (item.itemId) await this.localFileService.deleteFileById(item.itemId);
     }
     let newItem: CreatedItemDto = {
       name: updateItem.name ? updateItem.name : item.name,
@@ -95,8 +116,7 @@ export class ItemsController {
       regeneration: updateItem.regeneration ? updateItem.regeneration : item.regeneration,
       description: updateItem.description ? updateItem.description : item.description
     }
-    // image: updateItem.image ? updateItem.image : item.image,
-    this.itemsService.Update(updateItem.id, newItem);
+    await this.itemsService.Update(updateItem.id, newItem);
     return { message: 'Item updated' }
   }
 }

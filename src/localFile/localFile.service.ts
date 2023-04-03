@@ -24,6 +24,11 @@ class LocalFilesService {
     }
     return file;
   }
+
+  async deleteFileById(fileId: number) {
+    const file = await this.getFileById(fileId);
+    return await this.localFilesRepository.remove([file]);
+  }
 }
  
 export default LocalFilesService;
