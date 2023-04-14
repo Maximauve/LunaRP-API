@@ -6,11 +6,11 @@ FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package*.json ./
+COPY package*.json ./
 
 RUN npm i
 
-COPY --chown=node:node . .
+COPY . .
 
 # USER node
 
@@ -34,7 +34,7 @@ ENV NODE_ENV production
 
 # RUN npm ci --only=production && npm cache clean --force
 
-USER node
+# USER node
 
 CMD [ "node", "dist/main.js" ]
 
