@@ -61,6 +61,31 @@ export class CharactersController {
     return newCharacterArray;
   }
 
+  @Get('/me')
+  async GetMe(@Req() req) {
+    let me = await this.usersService.FindOneId(req.user.id);
+    if (await this.usersService.FindOneId(me.id)) {
+      let characters = await this.charactersService.FindAllByUser(me.id);
+      let newCharacterArray = [];
+      await Promise.all(characters.map(async (character: any) => {
+        if (character.characterId) {
+          let localFile = await this.localFileService.getFileById(character.characterId);
+          let newCharacter: CharacterFileDto = {
+            ...character,
+            path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+          }
+          newCharacterArray.push(newCharacter);
+        } else {
+          newCharacterArray.push(character);
+        }
+      }));
+      return newCharacterArray;
+    } else {
+      throw new HttpException('This user does not exist', HttpStatus.NOT_FOUND);
+    }
+  }
+
+
   @Get('/:id')
   async GetOne(@Param('id') id: string) {
     let character = await this.charactersService.FindOneId(+id);
