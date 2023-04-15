@@ -157,7 +157,7 @@ export class CharactersController {
   async Update(@Req() req, @Body() updatedCharacter: UpdatedCharacterDto, @UploadedFile() file?: Express.Multer.File) {
     let me = await this.usersService.FindOneId(req.user.id);
     let character = await this.charactersService.FindOneId(updatedCharacter.id);
-    if (me.role !== Role.Admin) {
+    if (me.role !== Role.Admin && me.id !== character.user.id) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
     } else if (!character) {
       throw new HttpException('This character does not exist', HttpStatus.NOT_FOUND);
