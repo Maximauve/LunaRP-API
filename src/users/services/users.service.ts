@@ -43,6 +43,15 @@ export class UsersService {
             }  });
     }
 
+    FindOneUsername(name: string): Promise<User> {
+        return this.usersRepository.findOne({ where: {username: name},
+            relations: {
+                characters: true,
+                campaigns: true
+            }  
+        });
+    }
+
     FindOneId(id: number): Promise<User> {
         return this.usersRepository.findOne({ where: {id: id},
         relations: {
