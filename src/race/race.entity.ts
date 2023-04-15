@@ -20,7 +20,9 @@ export class Race {
     @Column({ type:"longtext", nullable: false})
     description: string;
 
-    @OneToMany(() => Character, character => character.race)
+    @OneToMany(() => Character, character => character.race, {
+        cascade: true,
+    })
     character: Character;
 
     @ManyToMany(() => Language, {

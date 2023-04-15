@@ -41,6 +41,19 @@ export class CharactersService {
             } });
     }
 
+    async FindAllByUser(id: number): Promise<Character[]> {
+        return await this.charactersRepository.find({ where: {user :{id: id }},
+            relations: {
+                user: true,
+                campaign: true,
+                race: true,
+                spells: true,
+                classe: true,
+                inventory: true,
+            } });
+    }
+
+
     async Create(character: CreatedCharacterDto) : Promise<Character> {
         const newCharacter = this.charactersRepository.create(character);
         return this.charactersRepository.save(newCharacter);

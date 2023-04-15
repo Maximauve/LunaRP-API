@@ -52,14 +52,18 @@ export class Character {
     @JoinTable()
     campaign: Campaign[];
     
-    @ManyToOne(() => Race, race => race.character)
+    @ManyToOne(() => Race, race => race.character, {
+      onDelete: 'SET NULL',
+    })
     race: Race;
     
     @ManyToMany(() => Spell)
     @JoinTable()
     spells: Spell[];
 
-    @ManyToOne(() => Classe, classes => classes.character)
+    @ManyToOne(() => Classe, classes => classes.character, {
+      onDelete: 'SET NULL',
+    })
     classe: Classe;
 
     @Column({ nullable: true })

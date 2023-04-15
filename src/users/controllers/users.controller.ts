@@ -68,6 +68,11 @@ export class UsersController {
 	}))
 	async SignUp(@Body() body: CreatedUserDto, @UploadedFile() file?: Express.Multer.File) {
 		body.password = createHash("sha512").update(body.password).digest("hex")
+		if (this.usersService.FindOneEmail(body.email)) {
+			throw new HttpException('Email already exists', HttpStatus.CONFLICT);
+		} else if (this.usersService.FindOneUsername(body.username)) {
+			throw new HttpException('Username already exists', HttpStatus.CONFLICT);
+		}
 		if (!file) {
 			return this.usersService.Create(body);
 		}
@@ -86,6 +91,7 @@ export class UsersController {
 			throw new UnauthorizedException();
 		}
 		return {
+			"id": user.id,
 			"username": user.username,
 			"email": user.email,
 			"token": (await this.authService.Login(user)).access_token,
