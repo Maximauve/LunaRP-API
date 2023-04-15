@@ -61,7 +61,9 @@ export class Character {
     @JoinTable()
     spells: Spell[];
 
-    @ManyToOne(() => Classe, classes => classes.character)
+    @ManyToOne(() => Classe, classes => classes.character, {
+      onDelete: 'SET NULL',
+    })
     classe: Classe;
 
     @Column({ nullable: true })

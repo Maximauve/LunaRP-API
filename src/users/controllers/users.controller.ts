@@ -82,7 +82,7 @@ export class UsersController {
 			filename: file.originalname
 		});
 	}
-  
+	
 	@Post('/auth/login')
 	async login(@Body() body) {
 		let user = await this.usersService.FindOneEmail(body.email);
@@ -90,6 +90,7 @@ export class UsersController {
 			throw new UnauthorizedException();
 		}
 		return {
+			"id": user.id,
 			"username": user.username,
 			"email": user.email,
 			"token": (await this.authService.Login(user)).access_token,
@@ -102,7 +103,7 @@ export class UsersController {
 	async Delete(@Req() req, @Body() deletedUser: DeletedUserDto) {
 		let me = await this.usersService.FindOneId(req.user.id);
 		if (me.role !== Role.Admin) {
-		throw new HttpException('Vous devez être administrateur pour accéder à ce contenu.', HttpStatus.UNAUTHORIZED);
+			throw new HttpException('Vous devez être administrateur pour accéder à ce contenu.', HttpStatus.UNAUTHORIZED);
 		}
 		return this.usersService.Delete(deletedUser.id);
 	}
