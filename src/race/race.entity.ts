@@ -18,7 +18,7 @@ export class Race {
     size: string;
 
     @Column({ type:"longtext", nullable: false})
-    description: string;
+    description: Text;
 
     @OneToMany(() => Character, character => character.race, {
         cascade: true,

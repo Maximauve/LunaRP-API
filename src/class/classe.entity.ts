@@ -14,7 +14,7 @@ export class Classe {
     dice: number;
 
     @Column({ type:"longtext", nullable: false})
-    description: string;
+    description: Text;
 
     @ManyToMany(() => Spell, spell => spell.classes)
     spells: Spell[];

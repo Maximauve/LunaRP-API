@@ -23,7 +23,7 @@ export class CreatedSpellDto {
     duration: string;
 
     @IsNotEmpty()
-    description: string;
+    description: Text;
 
     @IsNotEmpty()
     classes: Classe[];

@@ -10,5 +10,5 @@ export class Language {
     name: string;
 
     @Column({ type:"varchar", nullable: false})
-    description: string;
+    description: Text;
 }   

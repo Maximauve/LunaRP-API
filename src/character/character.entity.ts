@@ -43,7 +43,7 @@ export class Character {
     charisma: number;
 
     @Column({nullable: false})
-    description: string;
+    description: Text;
 
     @ManyToOne(() => User, user => user.characters)
     user: User;

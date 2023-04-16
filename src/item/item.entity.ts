@@ -34,7 +34,7 @@ export class Item {
     image?: LocalFile;
 
     @Column({type: "longtext", nullable: false})
-    description: string;
+    description: Text;
 
     @OneToMany(() => CharacterItem, characterItem => characterItem.item)
     character_item: CharacterItem[];
