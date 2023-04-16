@@ -28,15 +28,15 @@ COPY . .
 
 # COPY --chown=node:node . .
 
-RUN npm run build
+# RUN npm run build
 
-ENV NODE_ENV production
+# ENV NODE_ENV production
 
 # RUN npm ci --only=production && npm cache clean --force
 
 # USER node
 
-CMD [ "node", "dist/main.js" ]
+CMD [ "npm", "run", "start:dev" ]
 
 ###################
 # PRODUCTION

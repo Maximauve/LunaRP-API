@@ -92,7 +92,16 @@ export class CharactersController {
     let localFile: LocalFile;
     if (!character) {
       throw new HttpException('Character not found', HttpStatus.NOT_FOUND);
-    } else if (character.characterId) { 
+    }
+    if (character.inventory) {
+      let newInventory: CharacterItem[] = [];
+      await Promise.all(character.inventory.map(async (item: any) => {
+        let newItem = await this.characterItemServices.FindOneId(item.id);
+        newInventory.push(newItem);
+      }));
+      character.inventory = newInventory;
+    }
+    if (character.characterId) { 
       localFile = await this.localFileService.getFileById(character.characterId);
       let newCharacter: CharacterFileDto = {
         ...character,
@@ -165,7 +174,8 @@ export class CharactersController {
   @UsePipes(ValidationPipe)
   async Delete(@Req() req, @Body() deletedCharacter: DeletedCharacterDto) {
     let me = await this.usersService.FindOneId(req.user.id);
-    if (me.role !== Role.Admin) {
+    let characterFind = await this.charactersService.FindOneId(deletedCharacter.id);
+    if (me.role !== Role.Admin && me.id !== characterFind.user.id) {
       throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
     }
     let character = await this.charactersService.Delete(deletedCharacter.id)
