@@ -4,6 +4,6 @@ import { CreatedCampaignDto } from "./campaign.dto";
 
 export class UpdatedCampaignDto extends PartialType(CreatedCampaignDto) {
     @IsNotEmpty()
-    @IsInt()
+    
     id: number;
 }

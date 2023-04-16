@@ -5,15 +5,15 @@ import { Race } from "src/race/race.entity";
 import { User } from "src/users/users.entity";
 
 export class CreatedCampaignDto {
-    @IsInt()
+    
     @IsNotEmpty()
     character_min_level: number;
 
-    @IsInt()
+    
     @IsNotEmpty()
     character_max_level: number;
 
-    @IsInt()
+    
     @IsNotEmpty()
     game_master: User;
 

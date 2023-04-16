@@ -4,6 +4,6 @@ import { CreatedSpellDto } from "./spell.dto";
 
 export class UpdatedSpellDto extends PartialType(CreatedSpellDto) {
     @IsNotEmpty()
-    @IsInt()
+    
     id: number;
 }

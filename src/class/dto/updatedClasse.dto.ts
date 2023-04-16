@@ -4,6 +4,6 @@ import { CreatedClasseDto } from "./classe.dto";
 
 export class UpdatedClasseDto extends PartialType(CreatedClasseDto) {
     @IsNotEmpty()
-    @IsInt()
+    
     id: number;
 }

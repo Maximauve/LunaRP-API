@@ -4,6 +4,6 @@ import { CreatedRaceDto } from "./race.dto";
 
 export class UpdatedRaceDto extends PartialType(CreatedRaceDto) {
     @IsNotEmpty()
-    @IsInt()
+    
     id: number;
 }

@@ -5,7 +5,7 @@ export class CreatedRaceDto {
     @IsNotEmpty()
     name: string;
 
-    @IsInt()
+    
     @IsNotEmpty()
     speed: number;
 

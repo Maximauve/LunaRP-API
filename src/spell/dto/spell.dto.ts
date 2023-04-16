@@ -6,7 +6,7 @@ export class CreatedSpellDto {
     @IsNotEmpty()
     name: string;
 
-    @IsInt()
+    
     @IsNotEmpty()
     level: number;
 

@@ -5,6 +5,6 @@ import { CreatedCharacterItemDto } from "./characterItem.dto";
 
 export class UpdatedCharacterItemDto extends PartialType(CreatedCharacterItemDto) {
     @IsNotEmpty()
-    @IsInt()
+    
     id: number;
 }

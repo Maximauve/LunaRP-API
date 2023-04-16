@@ -3,7 +3,7 @@ import { Character } from "src/character/character.entity";
 import { Item } from "src/item/item.entity";
 
 export class CreatedCharacterItemDto {
-    @IsInt()
+    
     @IsNotEmpty()
     quantity: number;
 
