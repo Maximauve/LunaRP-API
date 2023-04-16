@@ -40,7 +40,8 @@ export class UsersService {
             relations: {
                 characters: true,
                 campaigns: true
-            }  });
+            }  
+        });
     }
 
     FindOneUsername(name: string): Promise<User> {
