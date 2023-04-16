@@ -2,10 +2,14 @@ version: '3.8'
 
 services:
   api:
-    build:
-      context: .
     ports:
       - 3000:3000
+    volumes:
+      - type: bind
+        source: ./uploads
+        target: /usr/src/app/uploads
+    build:
+      context: .
   database:
     image: mysql:5.7
     restart: unless-stopped

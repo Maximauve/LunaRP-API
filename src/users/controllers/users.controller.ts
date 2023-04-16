@@ -28,16 +28,16 @@ export class UsersController {
 		let users = await this.usersService.GetAll();
 		let newUsersArray = [];
 		await Promise.all(users.map(async (user: any) => {
-		if (user.userId) {
-			let localFile = await this.localFileService.getFileById(user.userId);
-			let newItem: UserFileDto = {
-			...user,
-			path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+			if (user.userId) {
+				let localFile = await this.localFileService.getFileById(user.userId);
+				let newItem: UserFileDto = {
+					...user,
+					path: `${localFile.path}.${localFile.mimetype.split('/')[1]}`
+				}
+				newUsersArray.push(newItem);
+			} else {
+				newUsersArray.push(user);
 			}
-			newUsersArray.push(newItem);
-		} else {
-			newUsersArray.push(user);
-		}
 		}));
 		return newUsersArray;
 	}
@@ -64,7 +64,7 @@ export class UsersController {
 	@Post('/auth/sign-up')
 	@UseInterceptors(LocalFilesInterceptor({
 		fieldName: 'file',
-		path:'/users'
+		path: '/users'
 	}))
 	async SignUp(@Body() body: CreatedUserDto, @UploadedFile() file?: Express.Multer.File) {
 		body.password = createHash("sha512").update(body.password).digest("hex")
@@ -76,13 +76,14 @@ export class UsersController {
 		if (!file) {
 			return this.usersService.Create(body);
 		}
+
 		return this.usersService.CreateWithFile(body, {
 			path: file.path,
 			mimetype: file.mimetype,
 			filename: file.originalname
 		});
 	}
-	
+
 	@Post('/auth/login')
 	async login(@Body() body) {
 		let user = await this.usersService.FindOneEmail(body.email);
@@ -95,6 +96,7 @@ export class UsersController {
 			"email": user.email,
 			"token": (await this.authService.Login(user)).access_token,
 			"role": user.role,
+			"userId": user.userId,
 		};
 	}
 
@@ -113,12 +115,12 @@ export class UsersController {
 	@Post('/update')
 	@UseInterceptors(LocalFilesInterceptor({
 		fieldName: 'file',
-		path:'/users'
+		path: '/users'
 	}))
 	async Update(@Req() req, @Body() updatedUser: UpdatedUserDto, @UploadedFile() file?: Express.Multer.File) {
 		let me = await this.usersService.FindOneId(req.user.id);
 		let person = await this.usersService.FindOneId(updatedUser.id);
-		if (me.role !== Role.Admin && me.id !== updatedUser.id) {
+		if (me.role !== Role.Admin && me.id != updatedUser.id) {
 			throw new HttpException('Vous devez être administrateur pour accéder à ce contenu.', HttpStatus.UNAUTHORIZED);
 		} else if (!person) {
 			throw new HttpException('Utilisateur non trouvé.', HttpStatus.NOT_FOUND);
