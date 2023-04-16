@@ -31,10 +31,6 @@ export class RacesController {
   @Post('/create')
   @UsePipes(ValidationPipe)
   async Create(@Req() req, @Body() race: CreatedRaceDto) {
-    let me = await this.usersService.FindOneId(req.user.id);
-    if (me.role !== Role.Admin) {
-      throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-    }
     let languageArray: Language[] = [];
     await Promise.all(race.languages.map(async (language: any) => {
       language = await this.languagesService.findOne(language);

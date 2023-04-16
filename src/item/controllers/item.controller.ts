@@ -64,10 +64,7 @@ export class ItemsController {
     path:'/items'
   }))
   async Create(@Req() req, @Body() item: CreatedItemDto, @UploadedFile() file?: Express.Multer.File) {
-    let me = await this.usersService.FindOneId(req.user.id);
-    if (me.role !== Role.Admin) {
-      throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-    } else if (!file) {
+    if (!file) {
       return this.itemsService.Create(item);
     }
     return this.itemsService.CreateWithFile(item, {

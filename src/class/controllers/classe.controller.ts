@@ -30,10 +30,6 @@ export class ClasseController {
   @UsePipes(ValidationPipe)
   @Post('/create')
   async Create(@Req() req, @Body() classes: CreatedClasseDto) {
-    let me = await this.usersService.FindOneId(req.user.id);
-    if (me.role !== Role.Admin) {
-      throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-    }
     return this.classeService.Create(classes);
   }
 

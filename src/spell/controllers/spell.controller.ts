@@ -33,10 +33,6 @@ export class SpellsController {
 	@UsePipes(ValidationPipe)
 	@Post("/create")
 	async Create(@Req() req, @Body() spell: CreatedSpellDto) {
-		let me = await this.usersService.FindOneId(req.user.id);
-		if (me.role !== Role.Admin) {
-			throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-		}
 		let classArray: Classe[] = [];
 		await Promise.all(spell.classes.map(async (classe: any) => {
 			classe = await this.classesService.FindOneId(classe);

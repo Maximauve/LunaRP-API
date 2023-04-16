@@ -36,10 +36,7 @@ export class CampaignsController {
   @UsePipes(ValidationPipe)
   @Post('/create')
   async Create(@Req() req, @Body() campaign: CreatedCampaignDto) {
-    let me = await this.usersService.FindOneId(req.user.id);
-    if (me.role !== Role.Admin) {
-      throw new HttpException('You are not an admin', HttpStatus.UNAUTHORIZED);
-    } else if (campaign.character_min_level > campaign.character_max_level) {
+    if (campaign.character_min_level > campaign.character_max_level) {
       throw new HttpException('Min level > Max level', HttpStatus.BAD_REQUEST);
     }
     let id: any = campaign.game_master
