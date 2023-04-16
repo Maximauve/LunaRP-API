@@ -5,5 +5,5 @@ export class CreatedLanguageDto {
     name: string;
 
     @IsNotEmpty()
-    description: Text;
+    description: string;
 }

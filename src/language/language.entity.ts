@@ -9,6 +9,6 @@ export class Language {
     @Column({ type: "varchar", unique:true, nullable: false})
     name: string;
 
-    @Column({ type:"varchar", nullable: false})
-    description: Text;
+    @Column({ type:"longtext", nullable: false})
+    description: string;
 }   

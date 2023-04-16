@@ -38,7 +38,7 @@ export class CreatedCharacterDto {
     charisma: number;
 
     @IsNotEmpty()
-    description: Text;
+    description: string;
 
     user?: User;
 

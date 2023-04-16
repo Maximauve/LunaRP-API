@@ -13,7 +13,7 @@ export class CreatedRaceDto {
     size: string;
 
     @IsNotEmpty()
-    description: Text;
+    description: string;
 
     @IsNotEmpty()
     languages: Language[];

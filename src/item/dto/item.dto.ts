@@ -17,5 +17,5 @@ export class CreatedItemDto {
     regeneration: number;
 
     @IsNotEmpty()
-    description: Text;
+    description: string;
 }

@@ -24,8 +24,8 @@ export class Spell {
     @Column({nullable: false})
     duration: string;
 
-    @Column({nullable: false})
-    description: Text;
+    @Column({ type:"longtext", nullable: false})
+    description: string;
 
     @ManyToMany(() => Classe, classes => classes.spells)
     @JoinTable()

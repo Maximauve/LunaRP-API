@@ -42,8 +42,8 @@ export class Character {
     @Column({nullable: false})
     charisma: number;
 
-    @Column({nullable: false})
-    description: Text;
+    @Column({ type:"longtext", nullable: false})
+    description: string;
 
     @ManyToOne(() => User, user => user.characters)
     user: User;

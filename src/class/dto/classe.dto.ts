@@ -8,5 +8,5 @@ export class CreatedClasseDto {
     dice: number;
 
     @IsNotEmpty()
-    description: Text;
+    description: string;
 }
