@@ -120,7 +120,7 @@ export class UsersController {
 	async Update(@Req() req, @Body() updatedUser: UpdatedUserDto, @UploadedFile() file?: Express.Multer.File) {
 		let me = await this.usersService.FindOneId(req.user.id);
 		let person = await this.usersService.FindOneId(updatedUser.id);
-		if (me.role !== Role.Admin && me.id !== updatedUser.id) {
+		if (me.role !== Role.Admin && me.id != updatedUser.id) {
 			throw new HttpException('Vous devez être administrateur pour accéder à ce contenu.', HttpStatus.UNAUTHORIZED);
 		} else if (!person) {
 			throw new HttpException('Utilisateur non trouvé.', HttpStatus.NOT_FOUND);
