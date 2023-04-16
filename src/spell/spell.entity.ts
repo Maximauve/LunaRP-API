@@ -13,7 +13,7 @@ export class Spell {
     level: number;
 
     @Column({nullable: false})
-    scope: GLfloat;
+    scope: number;
 
     @Column({nullable: false})
     component: string;
