@@ -42,17 +42,17 @@ export class CreatedCharacterDto {
 
     user?: User;
 
-    campaign?: Campaign[];
+    campaign?: Campaign[] = [];
 
     @IsNotEmpty()
     race: Race;
     
     @IsNotEmpty()
-    spells: Spell[];
+    spells: Spell[] = [];
     
     @IsNotEmpty()
     classe: Classe;
 
     @IsNotEmpty()
-    inventory: CharacterItem[];
+    inventory: CharacterItem[] = [];
 }

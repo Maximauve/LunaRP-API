@@ -112,7 +112,7 @@ export class CharactersController {
     return character;
   }
 
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post('/create')
   @UseInterceptors(LocalFilesInterceptor({
     fieldName: 'file',

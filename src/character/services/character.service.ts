@@ -63,7 +63,10 @@ export class CharactersService {
         const newCharacter = this.charactersRepository.create(character);
         let characterCreated = await this.charactersRepository.save(newCharacter);
         const image = await this.localFilesService.saveLocalFileData(fileData);
-        await this.charactersRepository.update(characterCreated.id, {characterId: image.id});
+        console.log(image)
+        console.log(newCharacter)
+        console.log(characterCreated)
+        await this.charactersRepository.update(newCharacter.id, {characterId: image.id});
         return characterCreated;
     }
 
